@@ -1,6 +1,5 @@
 snekchek
 flake8
-flake8-bugbear
 flake8-import-order
 pylint
 vulture
