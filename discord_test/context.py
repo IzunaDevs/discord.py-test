@@ -5,7 +5,7 @@ import asyncio
 import discord
 
 
-class Context(discord.Context):
+class Context(discord.ext.commands.Context):
     def __init__(self, **attrs):
         self.message = attrs.pop('message', None)
         self.bot = attrs.pop('bot', None)
