@@ -1,5 +1,7 @@
 # External Libraries
 from setuptools import setup, find_packages
+
+# discord.py-test
 from discord_test import misc
 
 with open("README.rst") as file:
@@ -7,7 +9,6 @@ with open("README.rst") as file:
 
 with open("requirements.txt") as file:
     REQUIREMENTS = file.readlines()
-
 
 if __name__ == '__main__':
     setup(
@@ -24,9 +25,7 @@ if __name__ == '__main__':
         url="https://github.com/IzunaDevs/discord.py-test",
         packages=find_packages(),
         install_requires=REQUIREMENTS,
-        keywords=[
-            "discord", "discord.py", "test", "pytest", "unittest"
-        ],
+        keywords=["discord", "discord.py", "test", "pytest", "unittest"],
         classifiers=[
             "Development Status :: 2 - Pre-Alpha",
             "Intended Audience :: Developers",
@@ -36,8 +35,7 @@ if __name__ == '__main__':
             "Programming Language :: Python :: 3.4",
             "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6",
-            "Programming Language :: Python :: 3.7",
-            "Framework :: Pytest",
+            "Programming Language :: Python :: 3.7", "Framework :: Pytest",
             "Topic :: Software Development :: Testing",
             "Topic :: Software Development :: Libraries :: Python Modules"
         ],

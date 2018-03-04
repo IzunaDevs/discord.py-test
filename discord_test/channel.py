@@ -1,6 +1,8 @@
-import discord
-
+# Stdlib
 import asyncio
+
+# External Libraries
+import discord
 
 
 class TextChannel(discord.TextChannel):
@@ -9,7 +11,8 @@ class TextChannel(discord.TextChannel):
         self._update(guild, data)
 
     def __repr__(self):
-        return '<TextChannel id={0.id} name={0.name!r} position={0.position}>'.format(self)
+        return '<TextChannel id={0.id} name={0.name!r} position={0.position}>'.format(
+            self)
 
     @asyncio.coroutine
     def _edit(self):
@@ -40,7 +43,10 @@ class TextChannel(discord.TextChannel):
 
     @property
     def members(self):
-        return [m for m in self.guild.members if self.permissions_for(m).read_messages]
+        return [
+            m for m in self.guild.members
+            if self.permissions_for(m).read_messages
+        ]
 
     def is_nsfw(self):
         n = self.name
@@ -55,7 +61,15 @@ class TextChannel(discord.TextChannel):
         raise NotImplementedError
 
     @asyncio.coroutine
-    def purge(self, *, limit=100, check=None, before=None, after=None, around=None, reverse=False, bulk=True):
+    def purge(self,
+              *,
+              limit=100,
+              check=None,
+              before=None,
+              after=None,
+              around=None,
+              reverse=False,
+              bulk=True):
         raise NotImplementedError
 
     @asyncio.coroutine
@@ -73,7 +87,8 @@ class VoiceChannel(discord.VoiceChannel):
         self._update(guild, data)
 
     def __repr__(self):
-        return '<VoiceChannel id={0.id} name={0.name!r} position={0.position}>'.format(self)
+        return '<VoiceChannel id={0.id} name={0.name!r} position={0.position}>'.format(
+            self)
 
     @asyncio.coroutine
     def _edit(self):
@@ -88,7 +103,7 @@ class VoiceChannel(discord.VoiceChannel):
     def _update(self, guild, data):
         self.guild = guild
         self.name = data['name']
-        self.category_id = utils._get_as_snowflake(data, 'parent_id')
+        self.category_id = discord.utils._get_as_snowflake(data, 'parent_id')
         self.position = data['position']
         self.bitrate = data.get('bitrate')
         self.user_limit = data.get('user_limit')
@@ -115,12 +130,13 @@ class CategoryChannel(discord.CategoryChannel):
         self._update(guild, data)
 
     def __repr__(self):
-        return '<CategoryChannel id={0.id} name={0.name!r} position={0.position}>'.format(self)
+        return '<CategoryChannel id={0.id} name={0.name!r} position={0.position}>'.format(
+            self)
 
     def _update(self, guild, data):
         self.guild = guild
         self.name = data['name']
-        self.category_id = utils._get_as_snowflake(data, 'parent_id')
+        self.category_id = discord.utils._get_as_snowflake(data, 'parent_id')
         self.nsfw = data.get('nsfw', False)
         self.position = data['position']
         self._fill_overwrites(data)
@@ -200,7 +216,8 @@ class GroupChannel(discord.GroupChannel):
         if self.icon is None:
             return ''
 
-        return 'https://cdn.discordapp.com/channel-icons/{0.id}/{0.icon}.jpg'.format(self)
+        return 'https://cdn.discordapp.com/channel-icons/{0.id}/{0.icon}.jpg'.format(
+            self)
 
     @property
     def created_at(self):
