@@ -17,6 +17,8 @@ script:
   # ignore output from install
   - python setup.py install &> /dev/null
   - snekchek
+  # In case snekchek fails silently, use git diff for changelog
+  - PAGER='' git diff
 
 cache: pip
 
