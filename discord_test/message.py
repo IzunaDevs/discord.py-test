@@ -54,7 +54,7 @@ class Message(discord.Message):
         self._try_patch(data, 'pinned')
         self._try_patch(data, 'mention_everyone')
         self._try_patch(data, 'tts')
-        self._try_patch(data, 'type', lambda x: try_enum(MessageType, x))
+        self._try_patch(data, 'type', lambda x: discord.enums.try_enum(MessageType, x))
         self._try_patch(data, 'content')
         self._try_patch(data, 'attachments', lambda x: [Attachment(data=a, state=self._state) for a in x])
         self._try_patch(data, 'embeds', lambda x: list(map(Embed.from_data, x)))
