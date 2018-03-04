@@ -1,0 +1,2 @@
+[all]
+linters = flake8, pylint, vulture, isort, yapf
