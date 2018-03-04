@@ -1,5 +1,7 @@
+# Stdlib
 import asyncio
 
+# External Libraries
 import discord
 
 

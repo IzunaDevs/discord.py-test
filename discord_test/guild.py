@@ -1,10 +1,14 @@
+# Stdlib
 import asyncio
 import collections
 import copy
 
+# External Libraries
 import discord
 
-from discord_test import VoiceState, Game, Status, TextChannel, VoiceChannel, CategoryChannel, AuditLogIterator
+# discord.py-test
+from discord_test import (Game, Status, VoiceState, TextChannel, VoiceChannel,
+                          CategoryChannel, AuditLogIterator)
 
 
 class Guild(discord.Guild):
@@ -33,7 +37,8 @@ class Guild(discord.Guild):
         return self.name
 
     def __repr__(self):
-        return '<Guild id={0.id} name={0.name!r} chunked={0.chunked}>'.format(self)
+        return '<Guild id={0.id} name={0.name!r} chunked={0.chunked}>'.format(
+            self)
 
     def _update_voice_state(self, data, channel_id):
         user_id = int(data['user_id'])
@@ -90,7 +95,8 @@ class Guild(discord.Guild):
             user_id = int(presence['user']['id'])
             member = self.get_member(user_id)
             if member is not None:
-                member.status = discord.enums.try_enum(Status, presence['status'])
+                member.status = discord.enums.try_enum(Status,
+                                                       presence['status'])
                 game = presence.get('game', {})
                 member.game = Game(**game) if game else None
 
@@ -119,7 +125,10 @@ class Guild(discord.Guild):
 
     @property
     def voice_channels(self):
-        r = [ch for ch in self._channels.values() if isinstance(ch, VoiceChannel)]
+        r = [
+            ch for ch in self._channels.values()
+            if isinstance(ch, VoiceChannel)
+        ]
         r.sort(key=lambda c: (c.position, c.id))
         return r
 
@@ -134,13 +143,19 @@ class Guild(discord.Guild):
 
     @property
     def text_channels(self):
-        r = [ch for ch in self._channels.values() if isinstance(ch, TextChannel)]
+        r = [
+            ch for ch in self._channels.values()
+            if isinstance(ch, TextChannel)
+        ]
         r.sort(key=lambda c: (c.position, c.id))
         return r
 
     @property
     def categories(self):
-        r = [ch for ch in self._channels.values() if isinstance(ch, CategoryChannel)]
+        r = [
+            ch for ch in self._channels.values()
+            if isinstance(ch, CategoryChannel)
+        ]
         r.sort(key=lambda c: (c.position, c.id))
         return r
 
@@ -178,7 +193,7 @@ class Guild(discord.Guild):
     def get_member(self, user_id):
         return self._members.get(user_id)
 
-    @utils.cached_slot_property('_default_role')
+    @discord.utils.cached_slot_property('_default_role')
     def default_role(self):
         return discord.utils.find(lambda r: r.is_default(), self.roles)
 
@@ -192,20 +207,24 @@ class Guild(discord.Guild):
 
     def icon_url_as(self, *, format='webp', size=1024):
         if not discord.utils.valid_icon_size(size):
-            raise discord.InvalidArgument("size must be a power of 2 between 16 and 1024")
+            raise discord.InvalidArgument(
+                "size must be a power of 2 between 16 and 1024")
         if format not in discord.guild.VALID_ICON_FORMATS:
-            raise discord.InvalidArgument("format must be one of {}".format(discord.guild.VALID_ICON_FORMATS))
+            raise discord.InvalidArgument("format must be one of {0}".format(
+                discord.guild.VALID_ICON_FORMATS))
 
         if self.icon is None:
             return ''
 
-        return 'https://cdn.discordapp.com/icons/{0.id}/{0.icon}.{1}?size={2}'.format(self, format, size)
+        return 'https://cdn.discordapp.com/icons/{0.id}/{0.icon}.{1}?size={2}'.format(
+            self, format, size)
 
     @property
     def splash_url(self):
         if self.splash is None:
             return ''
-        return 'https://cdn.discordapp.com/splashes/{0.id}/{0.splash}.jpg?size=2048'.format(self)
+        return 'https://cdn.discordapp.com/splashes/{0.id}/{0.splash}.jpg?size=2048'.format(
+            self)
 
     @property
     def member_count(self):
@@ -240,7 +259,8 @@ class Guild(discord.Guild):
 
             # do the actual lookup and return if found
             # if it isn't found then we'll do a full name lookup below.
-            result = discord.utils.get(members, name=name[:-5], discriminator=potential_discriminator)
+            result = discord.utils.get(
+                members, name=name[:-5], discriminator=potential_discriminator)
             if result is not None:
                 return result
 
@@ -249,12 +269,27 @@ class Guild(discord.Guild):
 
         return discord.utils.find(pred, members)
 
-    def _create_channel(self, name, overwrites, channel_type, category=None, reason=None):
+    def _create_channel(self,
+                        name,
+                        overwrites,
+                        channel_type,
+                        category=None,
+                        reason=None):
         raise NotImplementedError
 
     @asyncio.coroutine
-    def create_text_channel(self, name, *, overwrites=None, category=None, reason=None):
-        data = yield from self._create_channel(name, overwrites, discord.ChannelType.text, category, reason=reason)
+    def create_text_channel(self,
+                            name,
+                            *,
+                            overwrites=None,
+                            category=None,
+                            reason=None):
+        data = yield from self._create_channel(
+            name,
+            overwrites,
+            discord.ChannelType.text,
+            category,
+            reason=reason)
         channel = TextChannel(guild=self, data=data)
 
         # temporarily add to the cache
@@ -262,8 +297,18 @@ class Guild(discord.Guild):
         return channel
 
     @asyncio.coroutine
-    def create_voice_channel(self, name, *, overwrites=None, category=None, reason=None):
-        data = yield from self._create_channel(name, overwrites, discord.ChannelType.voice, category, reason=reason)
+    def create_voice_channel(self,
+                             name,
+                             *,
+                             overwrites=None,
+                             category=None,
+                             reason=None):
+        data = yield from self._create_channel(
+            name,
+            overwrites,
+            discord.ChannelType.voice,
+            category,
+            reason=reason)
         channel = VoiceChannel(guild=self, data=data)
 
         # temporarily add to the cache
@@ -272,7 +317,8 @@ class Guild(discord.Guild):
 
     @asyncio.coroutine
     def create_category(self, name, *, overwrites=None, reason=None):
-        data = yield from self._create_channel(name, overwrites, discord.ChannelType.category, reason=reason)
+        data = yield from self._create_channel(
+            name, overwrites, discord.ChannelType.category, reason=reason)
         channel = CategoryChannel(guild=self, data=data)
 
         # temporarily add to the cache
@@ -340,12 +386,25 @@ class Guild(discord.Guild):
     def ack(self):
         raise NotImplementedError
 
-    def audit_logs(self, *, limit=100, before=None, after=None, reverse=None, user=None, action=None):
+    def audit_logs(self,
+                   *,
+                   limit=100,
+                   before=None,
+                   after=None,
+                   reverse=None,
+                   user=None,
+                   action=None):
         if user:
             user = user.id
 
         if action:
             action = action.value
 
-        return AuditLogIterator(self, before=before, after=after, limit=limit,
-                                reverse=reverse, user_id=user, action_type=action)
+        return AuditLogIterator(
+            self,
+            before=before,
+            after=after,
+            limit=limit,
+            reverse=reverse,
+            user_id=user,
+            action_type=action)

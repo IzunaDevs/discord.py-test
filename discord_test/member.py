@@ -1,8 +1,11 @@
+# Stdlib
 import asyncio
 import copy
 
+# External Libraries
 import discord
 
+# discord.py-test
 from discord_test import Game, Colour
 
 
@@ -48,7 +51,8 @@ class Member(discord.Member):
         # update the roles
         self.roles = [self.guild.default_role]
         for roleid in map(int, data['roles']):
-            role = discord.utils.find(lambda r: r.id == roleid, self.guild.roles)
+            role = discord.utils.find(lambda r: r.id == roleid,
+                                      self.guild.roles)
             if role is not None:
                 self.roles.append(role)
 
@@ -72,7 +76,7 @@ class Member(discord.Member):
         self._update_roles(data)
 
     def _presence_update(self, data, user):
-        self.status = discord.enums.try_enum(Status, data['status'])
+        self.status = discord.enums.try_enum(discord.Status, data['status'])
         game = data.get('game', {})
         self.game = Game(**game) if game else None
         u = self._user

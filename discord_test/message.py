@@ -1,9 +1,12 @@
+# Stdlib
 import asyncio
 import re
 
+# External Libraries
 import discord
 
-from discord_test import Reaction, Embed, CallMessage, Emoji, PartialEmoji
+# discord.py-test
+from discord_test import Embed, Reaction, CallMessage
 
 
 class Attachment(discord.Attachment):
@@ -24,12 +27,15 @@ class Attachment(discord.Attachment):
 class Message(discord.Message):
     def __init__(self, *, channel, data):
         self.id = int(data['id'])
-        self.webhook_id = discord.utils._get_as_snowflake(data, 'webhook_id')  # pylint: disable=protected-access
-        self.reactions = [Reaction(message=self, data=d) for d in data.get('reactions', [])]
+        self.webhook_id = discord.utils._get_as_snowflake(data, 'webhook_id')
+        self.reactions = [
+            Reaction(message=self, data=d) for d in data.get('reactions', [])
+        ]
         self._update(channel, data)
 
     def __repr__(self):
-        return '<Message id={0.id} pinned={0.pinned} author={0.author!r}>'.format(self)
+        return '<Message id={0.id} pinned={0.pinned} author={0.author!r}>'.format(
+            self)
 
     def _try_patch(self, data, key, transform=None):
         try:
@@ -50,14 +56,20 @@ class Message(discord.Message):
 
     def _update(self, channel, data):
         self.channel = channel
-        self._edited_timestamp = discord.utils.parse_time(data.get('edited_timestamp'))
+        self._edited_timestamp = discord.utils.parse_time(
+            data.get('edited_timestamp'))
         self._try_patch(data, 'pinned')
         self._try_patch(data, 'mention_everyone')
         self._try_patch(data, 'tts')
-        self._try_patch(data, 'type', lambda x: discord.enums.try_enum(MessageType, x))
+        self._try_patch(
+            data, 'type',
+            lambda x: discord.enums.try_enum(discord.MessageType, x))
         self._try_patch(data, 'content')
-        self._try_patch(data, 'attachments', lambda x: [Attachment(data=a, state=self._state) for a in x])
-        self._try_patch(data, 'embeds', lambda x: list(map(Embed.from_data, x)))
+        self._try_patch(
+            data, 'attachments',
+            lambda x: [Attachment(data=a, state=self._state) for a in x])
+        self._try_patch(data, 'embeds',
+                        lambda x: list(map(Embed.from_data, x)))
         self._try_patch(data, 'nonce')
 
         for handler in ('author', 'mentions', 'mention_roles', 'call'):
@@ -128,7 +140,9 @@ class Message(discord.Message):
     def channel_mentions(self):
         if self.guild is None:
             return []
-        it = filter(None, map(lambda m: self.guild.get_channel(m), self.raw_channel_mentions))
+        it = filter(None,
+                    map(lambda m: self.guild.get_channel(m),
+                        self.raw_channel_mentions))
         return discord.utils._unique(it)
 
     @discord.utils.cached_slot_property('_cs_clean_content')
@@ -190,16 +204,20 @@ class Message(discord.Message):
             return self.content
 
         if self.type is discord.MessageType.pins_add:
-            return '{0.name} pinned a message to this channel.'.format(self.author)
+            return '{0.name} pinned a message to this channel.'.format(
+                self.author)
 
         if self.type is discord.MessageType.recipient_add:
-            return '{0.name} added {1.name} to the group.'.format(self.author, self.mentions[0])
+            return '{0.name} added {1.name} to the group.'.format(
+                self.author, self.mentions[0])
 
         if self.type is discord.MessageType.recipient_remove:
-            return '{0.name} removed {1.name} from the group.'.format(self.author, self.mentions[0])
+            return '{0.name} removed {1.name} from the group.'.format(
+                self.author, self.mentions[0])
 
         if self.type is discord.MessageType.channel_name_change:
-            return '{0.author.name} changed the channel name: {0.content}'.format(self)
+            return '{0.author.name} changed the channel name: {0.content}'.format(
+                self)
 
         if self.type is discord.MessageType.channel_icon_change:
             return '{0.author.name} changed the channel icon.'.format(self)
@@ -261,7 +279,8 @@ class Message(discord.Message):
             elif call_ended:
                 return 'You missed a call from {0.author.name}'.format(self)
             else:
-                return '{0.author.name} started a call \N{EM DASH} Join the call.'.format(self)
+                return '{0.author.name} started a call \N{EM DASH} Join the call.'.format(
+                    self)
 
     @asyncio.coroutine
     def delete(self):
