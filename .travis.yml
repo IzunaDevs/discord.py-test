@@ -1,0 +1,24 @@
+language: python
+
+python:
+#  - "3.0"
+#  - "3.1"  # both of these error on travis
+#  - "3.2"  # this one too...?
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+#  - "3.7-dev"  # Forgot we need libyaml to test ourselves
+
+install:
+  - "pip install -r requirements-ci.txt"
+
+script:
+  # ignore output from install
+  - python setup.py install &> /dev/null
+  - snekchek
+
+cache: pip
+
+notifications:
+  email: false
